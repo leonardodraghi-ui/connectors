@@ -11,10 +11,13 @@
     let hasVideo = false;
 
     if (video) {
-      video.addEventListener('loadeddata', () => { hasVideo = true; placeholder && (placeholder.style.display = 'none'); video.style.display = 'block'; });
+      const showVideo = () => { hasVideo = true; placeholder && (placeholder.style.display = 'none'); video.style.display = 'block'; };
+      video.addEventListener('loadeddata', showVideo);
+      video.addEventListener('canplay', showVideo);
       video.addEventListener('error', () => { hasVideo = false; video.style.display = 'none'; }, true);
       video.querySelectorAll('source').forEach(s => s.addEventListener('error', () => { video.style.display = 'none'; }));
       video.style.display = 'none';
+      if (video.readyState >= 2) showVideo();          // already loaded (e.g. from cache) before this script ran
       video.play && video.play().catch(() => {});
     }
     btn && btn.addEventListener('click', () => {
